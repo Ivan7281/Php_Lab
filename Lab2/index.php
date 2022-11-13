@@ -111,16 +111,25 @@ $array_country2 = searchForCountry('USA', $tourney);
 
 $array_country3 = searchCountry($_GET, $tourney);
 
+$tourney3 = unserialize(file_get_contents("tourneyFile.TXT"));
+
 if (isset($_POST['add_person'])) {
     $person = addNewPerson();
     if (personValidation()) {
-        $tourney[] = $person;
+        $tourney3[] = $person;
+        $fd = fopen("tourneyFile.TXT", 'w') or die("файл не відкривається");
+        fwrite($fd, serialize($tourney3));
+        fclose($fd);
+        $tourney3 = unserialize(file_get_contents("tourneyFile.TXT"));
     }
 }
 
 if (isset($_POST['edit_person'])) {
     if (personValidation()) {
-        $tourney2 = editPerson($tourney);
+        $fd = fopen("tourneyFile.TXT", 'w') or die("файл не відкривається");
+        fwrite($fd, serialize(editPerson($tourney3)));
+        fclose($fd);
+        $tourney3 = unserialize(file_get_contents("tourneyFile.TXT"));
     }
 }
 
@@ -200,11 +209,11 @@ if (isset($_POST['edit_person'])) {
     <label>Третя оцінка: <input type="number" name="rating3"><br></label>
     <input name='edit_person' type="submit">
 </form>
-<?php if (isset($tourney2)):?>
+<?php if (isset($tourney3)):?>
 <table>
     <tr> <th>Code</th> <th>name</th> <th>sex</th> <th>age</th>
         <th>country</th> <th>rating1</th> <th>rating2</th> <th>rating3</th> </tr>
-    <?php foreach ($tourney2 as $person): ?>
+    <?php foreach ($tourney3 as $person): ?>
         <tr>
             <td><?=$person['code']?></td>
             <td><?=$person['name']?></td>
